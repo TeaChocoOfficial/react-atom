@@ -35,4 +35,32 @@ export const ProductAtom = createAtom<ProductState, ProductPayload>(
     },
 );
 
+interface DataProductPayload {
+    addPrice: number;
+    decrementPrice: number;
+    setName: string;
+}
+
+export const DataProductAtom = createAtom<ProductState, DataProductPayload>(
+    { name: "data product", price: 0 },
+    {
+        save: "data product atom",
+        actions: {
+            addPrice: (state, payload) => ({
+                ...state,
+                price: state.price + payload,
+            }),
+            decrementPrice: (state, payload) => ({
+                ...state,
+                price: state.price - payload,
+            }),
+            setName: (state, payload) => ({
+                ...state,
+                name: payload,
+            }),
+        },
+    },
+
+);
+
 export const buttonAtom = createAtom<HTMLButtonElement | null>(null);

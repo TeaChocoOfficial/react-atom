@@ -11,11 +11,10 @@ export default function UseRef() {
         }
     }, [ref]);
 
-    return <button ref={setRef}>some button</button>;
-}
-
-export function Component() {
-    const buttonRef = buttonAtom.ref();
-
-    return <button ref={buttonRef}>some button</button>;
+    return (
+        <>
+            <h1>use atom ref</h1>
+            <button ref={setRef}>some button</button>
+        </>
+    );
 }

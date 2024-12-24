@@ -1,6 +1,6 @@
 {
     "name": "@teachoco-official/react-atom",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "private": false,
     "description": "javascript npm library create by teachoco-official",
     "main": "dist/index.js",

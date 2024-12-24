@@ -7,8 +7,8 @@ import {
     AtomUseActionsType,
 } from "../types/atom";
 import { atom, useAtom } from "jotai";
+import { useCallback, useMemo } from "react";
 import { getStorage, setStorage } from "../function/storage";
-import { useMemo } from "react";
 
 export default function createAtom<
     Value,
@@ -22,16 +22,30 @@ export default function createAtom<
     const valueSave = save !== undefined ? getStorage<Value>(save) : undefined;
     const atomValue = atom<Value>(valueSave ? valueSave : defaultValue);
 
-    const saveing = (value: React.SetStateAction<Value>, state: Value) => {
+    const saving = (value: React.SetStateAction<Value>, state: Value) => {
         if (save !== undefined) {
             if (typeof value === "function") {
                 const newValue = (value as (prevState: Value) => Value)(state);
-                setStorage(save, newValue);
+                setStorage(save, newValue); // อัปเดต storage
             } else {
                 setStorage(save, value);
             }
         }
     };
+
+    function getSetState(
+        value: React.SetStateAction<Value>,
+        setState: React.Dispatch<React.SetStateAction<Value>>,
+    ) {
+        setState((prev) => {
+            saving(value, prev);
+            if (typeof value === "function") {
+                const newValue = (value as (prevState: Value) => Value)(prev);
+                return newValue;
+            }
+            return value;
+        });
+    }
 
     const get = (): Value => {
         const [state] = useAtom(atomValue);
@@ -39,40 +53,47 @@ export default function createAtom<
     };
 
     const set = (): React.Dispatch<React.SetStateAction<Value>> => {
-        const [state, setState] = useAtom(atomValue);
-        return (value) => {
-            saveing(value, state);
-            setState(value);
-        };
+        const [, setState] = useAtom(atomValue);
+        return useCallback((value) => getSetState(value, setState), []);
     };
 
     const use = (): [Value, React.Dispatch<React.SetStateAction<Value>>] => {
-        const state = useAtom(atomValue);
-        return useMemo(() => state, [state]);
+        const [state, setState] = useAtom(atomValue);
+        const setValue = useCallback(
+            (value: React.SetStateAction<Value>) =>
+                getSetState(value, setState),
+            [],
+        );
+        return useMemo(() => [state, setValue], [state, setValue]);
     };
 
     const reset = () => {
         const [, setState] = useAtom(atomValue);
-        return () => {
-            saveing(defaultValue, defaultValue);
+        return useCallback(() => {
+            saving(defaultValue, defaultValue);
             setState(defaultValue);
-        };
+        }, [setState]);
     };
 
     const ref = () => {
         const [, setState] = useAtom(atomValue);
-        return (element: HTMLElement | null) => setState(element as Value);
+        return useCallback(
+            (element: HTMLElement | null) => setState(element as Value),
+            [setState],
+        );
     };
 
     const useRef = (): [Value, (element: HTMLElement | null) => void] => {
         const [state, setState] = useAtom(atomValue);
-        const setRef = (element: HTMLElement | null) =>
-            setState(element as Value);
-        return [state, setRef];
+        const setRef = useCallback(
+            (element: HTMLElement | null) => setState(element as Value),
+            [setState],
+        );
+        return useMemo(() => [state, setRef], [state, setRef]);
     };
+
     const actions = () => {
         const [state, setState] = useAtom(atomValue);
-
         return useMemo(() => {
             const definedActions = {} as AtomUseActionsType<Payloads>;
 
@@ -84,8 +105,8 @@ export default function createAtom<
                     definedActions[key as keyof Payloads] = (
                         payload: Payloads[keyof Payloads],
                     ) => {
-                        const newState = action(state, payload);
-                        saveing(newState, state);
+                        const newState = action(state, payload); // ใช้ state
+                        saving(newState, state);
                         setState(newState);
                     };
                 }

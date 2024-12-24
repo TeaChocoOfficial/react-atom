@@ -1,19 +1,24 @@
-//-Path: "react-atom/src/view/app/UseAtomSave.tsx"
+//-Path: "react-atom/src/view/app/JotaiAtom.tsx"
 import { useEffect } from "react";
-import { SaveAtom } from "../global/atom";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 
-export default function UseAtomSave() {
-    const someValue = SaveAtom.get();
-    const someReset = SaveAtom.reset();
-    const setSomeValue = SaveAtom.set();
+const myAtom = atom(0);
+
+export default function JotaiAtom() {
+    const someValue = useAtomValue(myAtom);
+    const setSomeValue = useSetAtom(myAtom);
 
     useEffect(() => {
-        // console.log(someValue);
+        console.log(someValue);
     }, [someValue]);
+
+    useEffect(() => {
+        console.log(setSomeValue);
+    }, [setSomeValue]);
 
     return (
         <div>
-            <h1>use atom with save</h1>
+            <h1>use atom in jotai</h1>
             <p>Count: {someValue}</p>
             <button
                 onClick={() => {
@@ -29,7 +34,6 @@ export default function UseAtomSave() {
                 }}>
                 remove Value
             </button>
-            <button onClick={someReset}>reset</button>
         </div>
     );
 }

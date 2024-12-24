@@ -1,7 +1,6 @@
 //-Path: "react-atom/src/view/app/UseAtom.tsx"
 import { useEffect } from "react";
 import { SomeAtom } from "../global/atom";
-import createAtom from "../../hook/createAtom";
 
 export default function UseAtom() {
     const someValue = SomeAtom.get();
@@ -9,8 +8,12 @@ export default function UseAtom() {
     const setSomeValue = SomeAtom.set();
 
     useEffect(() => {
-        // console.log(someValue);
+        console.log(someValue);
     }, [someValue]);
+
+    useEffect(() => {
+        console.log(setSomeValue);
+    }, [setSomeValue]);
 
     return (
         <div>
@@ -22,6 +25,13 @@ export default function UseAtom() {
                     // console.log(someValue);
                 }}>
                 add Value
+            </button>
+            <button
+                onClick={() => {
+                    setSomeValue((prev) => prev - 1);
+                    // console.log(someValue);
+                }}>
+                remove Value
             </button>
             <button onClick={someReset}>reset</button>
         </div>
