@@ -1,4 +1,4 @@
-//-Path: "react-setup/src/app/Main.tsx"
+//-Path: "react-atom/src/view/main.tsx"
 import Setup from "./Setup";
 import { createRoot } from "react-dom/client";
 

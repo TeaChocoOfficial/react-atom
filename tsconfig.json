@@ -8,7 +8,7 @@
         "declarationDir": "./dist",
         "strict": true,
         "paths": {
-            "@teachoco-official/react-setup": ["./src/index.ts"]
+            "@teachoco-official/react-atom": ["./src/index.ts"]
         },
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,

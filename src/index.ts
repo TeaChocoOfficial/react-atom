@@ -1,1 +1,1 @@
-//-Path: "react-setup/src/index.ts"
+//-Path: "react-atom/src/index.ts"

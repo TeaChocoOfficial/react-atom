@@ -1,9 +1,14 @@
-//-Path: "react-setup/src/app/App.tsx"
+//-Path: "react-atom/src/view/App.tsx"
+import UseAtom from "./app/UseAtom";
+import { SomeAtom } from "./global/atom";
+import UseAtomSave from "./app/UseAtomSave";
+import UseAction from "./app/UseAction";
 
 export default function App() {
     return (
-        <div>
+        <>
             <h1>hello world</h1>
-        </div>
+            <UseAction />
+        </>
     );
 }
