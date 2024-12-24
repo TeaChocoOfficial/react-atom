@@ -32,7 +32,7 @@
     "license": "ISC",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/TeaChocoOfficial"
+        "url": "git+https://github.com/TeaChocoOfficial/react-atom.git"
     },
     "dependencies": {
         "@rollup/plugin-commonjs": "^28.0.2",
