@@ -1,4 +1,7 @@
 //-Path: "react-atom/src/types/atom.ts"
+import createAtom from "../hook/createAtom";
+
+export type CreateAtomType = typeof createAtom;
 
 export type AtomPayloadsType = { [K in string]: any };
 

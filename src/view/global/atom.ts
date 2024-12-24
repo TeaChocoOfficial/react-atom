@@ -1,9 +1,9 @@
 //-Path: "react-atom/src/view/global/atom.ts"
-import CreateAtom from "../../hook/createAtom";
+import { createAtom } from "@teachoco-official/react-atom";
 
-export const SomeAtom = CreateAtom(0);
+export const SomeAtom = createAtom(0);
 
-export const SaveAtom = CreateAtom(0, { save: "save atom" });
+export const SaveAtom = createAtom(0, { save: "save atom" });
 
 interface ProductState {
     name: string;
@@ -15,7 +15,7 @@ interface ProductPayload {
     updateProduct: Partial<ProductState>;
 }
 
-export const ProductAtom = CreateAtom<ProductState, ProductPayload>(
+export const ProductAtom = createAtom<ProductState, ProductPayload>(
     { name: "product", price: 0 },
     {
         actions: {
@@ -35,4 +35,4 @@ export const ProductAtom = CreateAtom<ProductState, ProductPayload>(
     },
 );
 
-export const buttonAtom = CreateAtom<HTMLButtonElement | null>(null);
+export const buttonAtom = createAtom<HTMLButtonElement | null>(null);

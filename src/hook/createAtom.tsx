@@ -8,8 +8,9 @@ import {
 } from "../types/atom";
 import { atom, useAtom } from "jotai";
 import { getStorage, setStorage } from "../function/storage";
+import { useMemo } from "react";
 
-export default function CreateAtom<
+export default function createAtom<
     Value,
     Payloads extends AtomPayloadsType = AtomPayloadsType,
     AtomOption extends AtomOptionType<Value, Payloads> = AtomOptionType<
@@ -34,7 +35,7 @@ export default function CreateAtom<
 
     const get = (): Value => {
         const [state] = useAtom(atomValue);
-        return state;
+        return useMemo(() => state, [state]);
     };
 
     const set = (): React.Dispatch<React.SetStateAction<Value>> => {
@@ -47,7 +48,7 @@ export default function CreateAtom<
 
     const use = (): [Value, React.Dispatch<React.SetStateAction<Value>>] => {
         const state = useAtom(atomValue);
-        return state;
+        return useMemo(() => state, [state]);
     };
 
     const reset = () => {
@@ -71,24 +72,26 @@ export default function CreateAtom<
     };
     const actions = () => {
         const [state, setState] = useAtom(atomValue);
-        const definedActions = {} as AtomUseActionsType<Payloads>;
 
-        const actionMap =
-            option?.actions ?? ({} as AtomActionsType<Value, Payloads>);
+        return useMemo(() => {
+            const definedActions = {} as AtomUseActionsType<Payloads>;
 
-        Object.entries(actionMap).forEach(([key, action]) => {
-            if (action) {
-                definedActions[key as keyof Payloads] = (
-                    payload: Payloads[keyof Payloads],
-                ) => {
-                    const newState = action(state, payload);
-                    saveing(newState, state);
-                    setState(newState);
-                };
-            }
-        });
+            const actionMap =
+                option?.actions ?? ({} as AtomActionsType<Value, Payloads>);
 
-        return definedActions;
+            Object.entries(actionMap).forEach(([key, action]) => {
+                if (action) {
+                    definedActions[key as keyof Payloads] = (
+                        payload: Payloads[keyof Payloads],
+                    ) => {
+                        const newState = action(state, payload);
+                        saveing(newState, state);
+                        setState(newState);
+                    };
+                }
+            });
+            return definedActions;
+        }, [state]);
     };
 
     return { get, set, use, reset, ref, useRef, actions };

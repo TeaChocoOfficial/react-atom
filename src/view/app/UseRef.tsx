@@ -1,15 +1,21 @@
 //-Path: "react-atom/src/view/app/UseRef.tsx"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { buttonAtom } from "../global/atom";
 
 export default function UseRef() {
-    const [ref, setRef] = useState<HTMLButtonElement | null>(null);
+    const [ref, setRef] = buttonAtom.useRef();
 
     useEffect(() => {
-        console.log(ref);
         if (ref) {
-            ref.textContent = "some text";
+            ref.textContent = "transform button";
         }
     }, [ref]);
 
-    return <button ref={(element) => setRef(element)}>some button</button>;
+    return <button ref={setRef}>some button</button>;
+}
+
+export function Component() {
+    const buttonRef = buttonAtom.ref();
+
+    return <button ref={buttonRef}>some button</button>;
 }

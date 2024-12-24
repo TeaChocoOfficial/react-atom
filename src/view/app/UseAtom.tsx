@@ -1,6 +1,7 @@
 //-Path: "react-atom/src/view/app/UseAtom.tsx"
 import { useEffect } from "react";
 import { SomeAtom } from "../global/atom";
+import createAtom from "../../hook/createAtom";
 
 export default function UseAtom() {
     const someValue = SomeAtom.get();
