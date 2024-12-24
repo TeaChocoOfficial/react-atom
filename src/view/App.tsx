@@ -6,6 +6,7 @@ import UseAtomSave from "./app/UseAtomSave";
 import UseRef from "./app/UseRef";
 import JotaiAtom from "./app/JotaiAtom";
 import UseAcionSave from "./app/UseAcionSave";
+import UsesAtom from "./app/UsesAtom";
 
 export default function App() {
     return (
@@ -13,6 +14,7 @@ export default function App() {
             <h1>hello world</h1>
             <JotaiAtom />
             <UseAtom />
+            <UsesAtom />
             <UseRef />
             <UseAction />
             <UseAtomSave />

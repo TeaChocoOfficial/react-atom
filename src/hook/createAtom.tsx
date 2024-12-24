@@ -20,13 +20,15 @@ export default function createAtom<
 >(defaultValue: Value, option?: AtomOption): AtomType<Value, Payloads> {
     const save = option?.save;
     const valueSave = save !== undefined ? getStorage<Value>(save) : undefined;
-    const atomValue = atom<Value>(valueSave ? valueSave : defaultValue);
+    const atomValue = atom<Value>(
+        valueSave !== undefined ? valueSave : defaultValue,
+    );
 
     const saving = (value: React.SetStateAction<Value>, state: Value) => {
         if (save !== undefined) {
-            if (typeof value === "function") {
-                const newValue = (value as (prevState: Value) => Value)(state);
-                setStorage(save, newValue); // อัปเดต storage
+            if (value instanceof Function) {
+                const newValue = value(state);
+                setStorage(save, newValue);
             } else {
                 setStorage(save, value);
             }
@@ -34,17 +36,18 @@ export default function createAtom<
     };
 
     function getSetState(
-        value: React.SetStateAction<Value>,
         setState: React.Dispatch<React.SetStateAction<Value>>,
     ) {
-        setState((prev) => {
-            saving(value, prev);
-            if (typeof value === "function") {
-                const newValue = (value as (prevState: Value) => Value)(prev);
-                return newValue;
-            }
-            return value;
-        });
+        return useCallback((value: React.SetStateAction<Value>) => {
+            setState((prev) => {
+                saving(value, prev);
+                if (value instanceof Function) {
+                    const newValue = value(prev);
+                    return newValue;
+                }
+                return value;
+            });
+        }, []);
     }
 
     const get = (): Value => {
@@ -54,17 +57,13 @@ export default function createAtom<
 
     const set = (): React.Dispatch<React.SetStateAction<Value>> => {
         const [, setState] = useAtom(atomValue);
-        return useCallback((value) => getSetState(value, setState), []);
+        return getSetState(setState);
     };
 
     const use = (): [Value, React.Dispatch<React.SetStateAction<Value>>] => {
         const [state, setState] = useAtom(atomValue);
-        const setValue = useCallback(
-            (value: React.SetStateAction<Value>) =>
-                getSetState(value, setState),
-            [],
-        );
-        return useMemo(() => [state, setValue], [state, setValue]);
+        const setValue = getSetState(setState);
+        return useMemo(() => [state, setValue], [state]);
     };
 
     const reset = () => {
@@ -72,14 +71,14 @@ export default function createAtom<
         return useCallback(() => {
             saving(defaultValue, defaultValue);
             setState(defaultValue);
-        }, [setState]);
+        }, []);
     };
 
     const ref = () => {
         const [, setState] = useAtom(atomValue);
         return useCallback(
             (element: HTMLElement | null) => setState(element as Value),
-            [setState],
+            [],
         );
     };
 
@@ -87,9 +86,9 @@ export default function createAtom<
         const [state, setState] = useAtom(atomValue);
         const setRef = useCallback(
             (element: HTMLElement | null) => setState(element as Value),
-            [setState],
+            [],
         );
-        return useMemo(() => [state, setRef], [state, setRef]);
+        return useMemo(() => [state, setRef], [state]);
     };
 
     const actions = () => {
@@ -115,5 +114,5 @@ export default function createAtom<
         }, [state]);
     };
 
-    return { get, set, use, reset, ref, useRef, actions };
+    return { get, set, use, reset, ref, useRef, actions, atomValue };
 }

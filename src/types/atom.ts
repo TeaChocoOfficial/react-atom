@@ -1,11 +1,20 @@
 //-Path: "react-atom/src/types/atom.ts"
+import { PrimitiveAtom } from "jotai";
 import createAtom from "../hook/createAtom";
 
 export type CreateAtomType = typeof createAtom;
 
 export type AtomPayloadsType = { [K in string]: any };
 
+type WithInitialValue<Value> = {
+    init: Value;
+};
+
+export type AtomValueType<Value> = PrimitiveAtom<Value> &
+    WithInitialValue<Value>;
+
 export type AtomType<Value, Payloads extends AtomPayloadsType> = {
+    atomValue: AtomValueType<Value>;
     get: () => Value;
     set: () => (value: React.SetStateAction<Value>) => void;
     use: () => [Value, React.Dispatch<React.SetStateAction<Value>>];

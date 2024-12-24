@@ -3,6 +3,8 @@ import { createAtom } from "@teachoco-official/react-atom";
 
 export const SomeAtom = createAtom(0);
 
+export const SomesAtom = createAtom(0);
+
 export const SaveAtom = createAtom(0, { save: "save atom" });
 
 interface ProductState {
