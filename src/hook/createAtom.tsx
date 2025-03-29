@@ -10,7 +10,7 @@ import { atom, useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 import { getStorage, setStorage } from "../function/storage";
 
-export default function createAtom<
+export function createAtom<
     Value,
     Payloads extends AtomPayloadsType = AtomPayloadsType,
     AtomOption extends AtomOptionType<Value, Payloads> = AtomOptionType<
@@ -38,21 +38,25 @@ export default function createAtom<
     function getSetState(
         setState: React.Dispatch<React.SetStateAction<Value>>,
     ) {
-        return useCallback((value: React.SetStateAction<Value>) => {
-            setState((prev) => {
-                saving(value, prev);
-                if (value instanceof Function) {
-                    const newValue = value(prev);
-                    return newValue;
-                }
-                return value;
-            });
-        }, []);
+        if (save !== undefined) {
+            return useCallback((value: React.SetStateAction<Value>) => {
+                setState((prev) => {
+                    saving(value, prev);
+                    if (value instanceof Function) {
+                        const newValue = value(prev);
+                        return newValue;
+                    }
+                    return value;
+                });
+            }, []);
+        } else {
+            return setState;
+        }
     }
 
     const get = (): Value => {
         const [state] = useAtom(atomValue);
-        return useMemo(() => state, [state]);
+        return state;
     };
 
     const set = (): React.Dispatch<React.SetStateAction<Value>> => {
@@ -63,15 +67,15 @@ export default function createAtom<
     const use = (): [Value, React.Dispatch<React.SetStateAction<Value>>] => {
         const [state, setState] = useAtom(atomValue);
         const setValue = getSetState(setState);
-        return useMemo(() => [state, setValue], [state]);
+        return [state, setValue];
     };
 
     const reset = () => {
         const [, setState] = useAtom(atomValue);
-        return useCallback(() => {
+        return () => {
             saving(defaultValue, defaultValue);
             setState(defaultValue);
-        }, []);
+        };
     };
 
     const ref = () => {
@@ -88,7 +92,7 @@ export default function createAtom<
             (element: HTMLElement | null) => setState(element as Value),
             [],
         );
-        return useMemo(() => [state, setRef], [state]);
+        return [state, setRef];
     };
 
     const actions = () => {
@@ -111,7 +115,7 @@ export default function createAtom<
                 }
             });
             return definedActions;
-        }, [state]);
+        }, [state, option?.actions]);
     };
 
     return { get, set, use, reset, ref, useRef, actions, atomValue };

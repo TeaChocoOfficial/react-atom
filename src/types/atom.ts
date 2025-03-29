@@ -1,6 +1,6 @@
 //-Path: "react-atom/src/types/atom.ts"
 import { PrimitiveAtom } from "jotai";
-import createAtom from "../hook/createAtom";
+import { createAtom } from "../hook/createAtom";
 
 export type CreateAtomType = typeof createAtom;
 
